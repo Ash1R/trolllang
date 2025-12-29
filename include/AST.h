@@ -15,6 +15,7 @@ struct VariableExpr;
 struct CallExpr;
 struct AssignmentExpr;
 struct LogicalExpr;
+struct ArrayLiteralExpr;
 
 struct BlockStmt;
 struct LetStmt;
@@ -37,6 +38,7 @@ public:
     virtual std::any visitCallExpr(std::shared_ptr<CallExpr> expr) = 0;
     virtual std::any visitAssignmentExpr(std::shared_ptr<AssignmentExpr> expr) = 0;
     virtual std::any visitLogicalExpr(std::shared_ptr<LogicalExpr> expr) = 0;
+    virtual std::any visitArrayLiteralExpr(std::shared_ptr<ArrayLiteralExpr> expr) = 0;
 
     // Statements
     virtual std::any visitBlockStmt(std::shared_ptr<BlockStmt> stmt) = 0;
@@ -87,9 +89,9 @@ struct UnaryExpr : public Expr, public std::enable_shared_from_this<UnaryExpr> {
 };
 
 struct LiteralExpr : public Expr, public std::enable_shared_from_this<LiteralExpr> {
-    std::variant<std::monostate, int, std::string> value;
+    std::variant<std::monostate, int, double, std::string> value;
 
-    LiteralExpr(std::variant<std::monostate, int, std::string> value)
+    LiteralExpr(std::variant<std::monostate, int, double, std::string> value)
         : value(std::move(value)) {}
 
     std::any accept(Visitor* visitor) override {
@@ -142,6 +144,17 @@ struct LogicalExpr : public Expr, public std::enable_shared_from_this<LogicalExp
 
     std::any accept(Visitor* visitor) override {
         return visitor->visitLogicalExpr(shared_from_this());
+    }
+};
+
+struct ArrayLiteralExpr : public Expr, public std::enable_shared_from_this<ArrayLiteralExpr> {
+    std::vector<std::shared_ptr<Expr>> elements;
+
+    ArrayLiteralExpr(std::vector<std::shared_ptr<Expr>> elements)
+        : elements(std::move(elements)) {}
+
+    std::any accept(Visitor* visitor) override {
+        return visitor->visitArrayLiteralExpr(shared_from_this());
     }
 };
 

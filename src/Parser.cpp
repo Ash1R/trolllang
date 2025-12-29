@@ -200,7 +200,7 @@ std::shared_ptr<Expr> Parser::term() {
 std::shared_ptr<Expr> Parser::factor() {
     std::shared_ptr<Expr> expr = unary();
 
-    while (match({TokenType::SLASH, TokenType::STAR, TokenType::PERCENT})) {
+    while (match({TokenType::SLASH, TokenType::STAR, TokenType::PERCENT, TokenType::AT})) {
         Token op = previous();
         std::shared_ptr<Expr> right = unary();
         expr = std::make_shared<BinaryExpr>(expr, op, right);
@@ -243,8 +243,7 @@ std::shared_ptr<Expr> Parser::call() {
 
 std::shared_ptr<Expr> Parser::primary() {
     if (match({TokenType::NUMBER})) {
-        int value = std::get<int>(previous().literal);
-        return std::make_shared<LiteralExpr>(value);
+        return std::make_shared<LiteralExpr>(previous().literal);
     }
 
     if (match({TokenType::STRING})) {
@@ -256,6 +255,10 @@ std::shared_ptr<Expr> Parser::primary() {
         return std::make_shared<VariableExpr>(previous());
     }
 
+    if (match({TokenType::LEFT_BRACKET})) {
+        return arrayLiteral();
+    }
+
     if (match({TokenType::LEFT_PAREN})) {
         std::shared_ptr<Expr> expr = expression();
         consume(TokenType::RIGHT_PAREN, "Expected ')' after expression.");
@@ -263,6 +266,17 @@ std::shared_ptr<Expr> Parser::primary() {
     }
 
     throw error(peek(), "Expect expression.");
+}
+
+std::shared_ptr<Expr> Parser::arrayLiteral() {
+    std::vector<std::shared_ptr<Expr>> elements;
+    if (!check(TokenType::RIGHT_BRACKET)) {
+        do {
+            elements.push_back(expression());
+        } while (match({TokenType::COMMA}));
+    }
+    consume(TokenType::RIGHT_BRACKET, "Expected ']' after array elements.");
+    return std::make_shared<ArrayLiteralExpr>(elements);
 }
 
 // Helpers

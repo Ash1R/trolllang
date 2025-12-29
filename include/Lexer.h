@@ -24,7 +24,7 @@ private:
     void scanToken();
     char advance();
     void addToken(TokenType type);
-    void addToken(TokenType type, std::variant<std::monostate, int, std::string> literal);
+    void addToken(TokenType type, std::variant<std::monostate, int, double, std::string> literal);
     bool match(char expected);
     char peek();
     char peekNext();

@@ -28,6 +28,8 @@ public:
     std::any visitLiteralExpr(std::shared_ptr<LiteralExpr> expr) override {
         if (std::holds_alternative<int>(expr->value)) {
             return std::to_string(std::get<int>(expr->value));
+        } else if (std::holds_alternative<double>(expr->value)) {
+            return std::to_string(std::get<double>(expr->value));
         } else if (std::holds_alternative<std::string>(expr->value)) {
             return "\"" + std::get<std::string>(expr->value) + "\"";
         }
@@ -115,6 +117,18 @@ public:
             result += std::any_cast<std::string>(s->accept(this));
         }
         result += ")";
+        return result;
+    }
+
+    std::any visitArrayLiteralExpr(std::shared_ptr<ArrayLiteralExpr> expr) override {
+        std::string result = "[";
+        for (size_t i = 0; i < expr->elements.size(); ++i) {
+            result += std::any_cast<std::string>(expr->elements[i]->accept(this));
+            if (i != expr->elements.size() - 1) {
+                result += ", ";
+            }
+        }
+        result += "]";
         return result;
     }
 

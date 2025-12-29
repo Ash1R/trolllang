@@ -44,6 +44,7 @@ private:
     std::shared_ptr<Expr> unary();
     std::shared_ptr<Expr> call();
     std::shared_ptr<Expr> primary();
+    std::shared_ptr<Expr> arrayLiteral();
 
     // Helpers
     bool match(const std::vector<TokenType>& types);

@@ -8,10 +8,10 @@
 struct Token {
     TokenType type;
     std::string lexeme;
-    std::variant<std::monostate, int, std::string> literal; // Usually just int for this grammar, but keeping flexible
+    std::variant<std::monostate, int, double, std::string> literal; // Added double for floats
     int line;
 
-    Token(TokenType type, std::string lexeme, std::variant<std::monostate, int, std::string> literal, int line)
+    Token(TokenType type, std::string lexeme, std::variant<std::monostate, int, double, std::string> literal, int line)
         : type(type), lexeme(std::move(lexeme)), literal(std::move(literal)), line(line) {}
 
     std::string toString() const {

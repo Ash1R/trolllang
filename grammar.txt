@@ -1,5 +1,7 @@
-# Trolland grammar, based on C, .troll extenstion
+# Trollang grammar, based on C, .troll extenstion
 
+
+# this is like high level blocks
 program     := (function)* EOF ;
 
 function    := "fn" IDENT "(" params? ")" block ;
@@ -7,6 +9,7 @@ params      := IDENT ("," IDENT)* ;
 
 block       := "{" statement* "}" ;
 
+# control flow statements
 statement   := letStmt
              | ifStmt
              | whileStmt
@@ -15,13 +18,14 @@ statement   := letStmt
              | exprStmt
              | block ;
 
-letStmt     := "let" IDENT ("=" expr)? ";" ;
+letStmt     := "let" IDENT ("=" expr)? ";" ; #IDENT means indent based
 ifStmt      := "if" "(" expr ")" statement ("else" statement)? ;
 whileStmt   := "while" "(" expr ")" statement ;
 returnStmt  := "return" expr? ";" ;
 printStmt   := "print" "(" expr ")" ";" ;
 exprStmt    := expr ";" ;
 
+# expressions with variables !!
 expr        := assignment ;
 
 assignment  := IDENT "=" assignment

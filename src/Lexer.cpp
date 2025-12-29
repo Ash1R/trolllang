@@ -29,12 +29,15 @@ void Lexer::scanToken() {
         case ')': addToken(TokenType::RIGHT_PAREN); break;
         case '{': addToken(TokenType::LEFT_BRACE); break;
         case '}': addToken(TokenType::RIGHT_BRACE); break;
+        case '[': addToken(TokenType::LEFT_BRACKET); break;
+        case ']': addToken(TokenType::RIGHT_BRACKET); break;
         case ',': addToken(TokenType::COMMA); break;
         case ';': addToken(TokenType::SEMICOLON); break;
         case '-': addToken(TokenType::MINUS); break;
         case '+': addToken(TokenType::PLUS); break;
         case '*': addToken(TokenType::STAR); break;
         case '%': addToken(TokenType::PERCENT); break;
+        case '@': addToken(TokenType::AT); break;
         case '!': addToken(match('=') ? TokenType::BANG_EQUAL : TokenType::BANG); break;
         case '=': addToken(match('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL); break;
         case '<': addToken(match('=') ? TokenType::LESS_EQUAL : TokenType::LESS); break;
@@ -89,7 +92,7 @@ void Lexer::addToken(TokenType type) {
     addToken(type, std::monostate{});
 }
 
-void Lexer::addToken(TokenType type, std::variant<std::monostate, int, std::string> literal) {
+void Lexer::addToken(TokenType type, std::variant<std::monostate, int, double, std::string> literal) {
     std::string text = source.substr(start, current - start);
     tokens.emplace_back(type, text, literal, line);
 }
@@ -132,8 +135,17 @@ void Lexer::string() {
 void Lexer::number() {
     while (isDigit(peek())) advance();
 
-    // No floats in grammar, just INT
-    addToken(TokenType::NUMBER, std::stoi(source.substr(start, current - start)));
+    // Look for a fractional part.
+    if (peek() == '.' && isDigit(peekNext())) {
+        // Consume the "."
+        advance();
+
+        while (isDigit(peek())) advance();
+        
+        addToken(TokenType::NUMBER, std::stod(source.substr(start, current - start)));
+    } else {
+        addToken(TokenType::NUMBER, std::stoi(source.substr(start, current - start)));
+    }
 }
 
 void Lexer::identifier() {

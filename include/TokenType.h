@@ -4,7 +4,8 @@
 enum class TokenType {
     // Single-character tokens
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
-    COMMA, SEMICOLON, MINUS, PLUS, SLASH, STAR, PERCENT,
+    LEFT_BRACKET, RIGHT_BRACKET,
+    COMMA, SEMICOLON, MINUS, PLUS, SLASH, STAR, PERCENT, AT,
 
     // One or two character tokens
     BANG, BANG_EQUAL,
