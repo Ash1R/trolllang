@@ -330,3 +330,10 @@ void Interpreter::checkNumberOperands(const Token& operatorToken, const RuntimeV
     if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) return;
     throw RuntimeError(operatorToken, "Operands must be numbers.");
 }
+
+std::any Interpreter::visitIndexExpr(std::shared_ptr<IndexExpr> expr) {
+    throw std::runtime_error("Not implemented in Interpreter");
+}
+std::any Interpreter::visitArrayAssignmentExpr(std::shared_ptr<ArrayAssignmentExpr> expr) {
+    throw std::runtime_error("Not implemented in Interpreter");
+}

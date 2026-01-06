@@ -22,6 +22,8 @@ public:
     std::any visitCallExpr(std::shared_ptr<CallExpr> expr) override;
     std::any visitGetExpr(std::shared_ptr<GetExpr> expr) override;
     std::any visitArrayLiteralExpr(std::shared_ptr<ArrayLiteralExpr> expr) override;
+    std::any visitIndexExpr(std::shared_ptr<IndexExpr> expr) override;
+    std::any visitArrayAssignmentExpr(std::shared_ptr<ArrayAssignmentExpr> expr) override;
 
     // Statement Visitors
     std::any visitExprStmt(std::shared_ptr<ExprStmt> stmt) override;

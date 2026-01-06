@@ -32,6 +32,8 @@ public:
     std::any visitAssignmentExpr(std::shared_ptr<AssignmentExpr> expr) override;
     std::any visitLogicalExpr(std::shared_ptr<LogicalExpr> expr) override;
     std::any visitArrayLiteralExpr(std::shared_ptr<ArrayLiteralExpr> expr) override;
+    std::any visitIndexExpr(std::shared_ptr<IndexExpr> expr) override;
+    std::any visitArrayAssignmentExpr(std::shared_ptr<ArrayAssignmentExpr> expr) override;
 
     std::any visitBlockStmt(std::shared_ptr<BlockStmt> stmt) override;
     std::any visitLetStmt(std::shared_ptr<LetStmt> stmt) override;
