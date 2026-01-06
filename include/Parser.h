@@ -22,8 +22,9 @@ private:
     int current = 0;
 
     // Grammar rules
-    std::shared_ptr<Stmt> declaration(); // Covers function and standard statements if we were allowing globals, but grammar says program := function*
+    std::shared_ptr<Stmt> declaration(); 
     std::shared_ptr<FunctionStmt> function();
+    std::shared_ptr<Stmt> modelDeclaration(); // New
     std::shared_ptr<Stmt> statement();
     std::shared_ptr<Stmt> letDeclaration();
     std::shared_ptr<Stmt> ifStatement();

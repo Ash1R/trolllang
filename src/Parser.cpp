@@ -7,12 +7,37 @@ std::vector<std::shared_ptr<Stmt>> Parser::parse() {
     std::vector<std::shared_ptr<Stmt>> statements;
     while (!isAtEnd()) {
         try {
-            statements.push_back(function());
+            statements.push_back(declaration());
         } catch (ParseError& error) {
             synchronize();
         }
     }
     return statements;
+}
+
+std::shared_ptr<Stmt> Parser::declaration() {
+    if (match({TokenType::MODEL})) return modelDeclaration();
+    if (check(TokenType::FN)) return function();
+    
+    return statement();
+}
+
+std::shared_ptr<Stmt> Parser::modelDeclaration() {
+    Token name = consume(TokenType::IDENTIFIER, "Expected model name.");
+    consume(TokenType::LEFT_BRACE, "Expected '{' before model body.");
+
+    std::vector<std::shared_ptr<Stmt>> methods;
+    while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+        if (match({TokenType::LET})) {
+             methods.push_back(letDeclaration());
+        } else if (check(TokenType::FN)) {
+             methods.push_back(function());
+        } else {
+            throw error(peek(), "Expected 'let' or 'fn' inside model.");
+        }
+    }
+    consume(TokenType::RIGHT_BRACE, "Expected '}' after model body.");
+    return std::make_shared<ModelStmt>(name, methods);
 }
 
 std::shared_ptr<FunctionStmt> Parser::function() {
@@ -60,7 +85,7 @@ std::shared_ptr<Stmt> Parser::letDeclaration() {
 std::shared_ptr<BlockStmt> Parser::block() {
     std::vector<std::shared_ptr<Stmt>> statements;
     while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
-        statements.push_back(statement());
+        statements.push_back(declaration());
     }
     consume(TokenType::RIGHT_BRACE, "Expected '}' after block.");
     return std::make_shared<BlockStmt>(statements);
@@ -129,6 +154,8 @@ std::shared_ptr<Expr> Parser::assignment() {
         if (auto varExpr = std::dynamic_pointer_cast<VariableExpr>(expr)) {
             Token name = varExpr->name;
             return std::make_shared<AssignmentExpr>(name, value);
+        } else if (auto indexExpr = std::dynamic_pointer_cast<IndexExpr>(expr)) {
+            return std::make_shared<ArrayAssignmentExpr>(indexExpr->object, indexExpr->index, value, indexExpr->bracket);
         }
 
         error(equals, "Invalid assignment target.");
@@ -233,9 +260,17 @@ std::shared_ptr<Expr> Parser::call() {
             }
             Token paren = consume(TokenType::RIGHT_PAREN, "Expected ')' after arguments.");
             expr = std::make_shared<CallExpr>(expr, paren, arguments);
+        } else if (match({TokenType::DOT})) {
+            Token name = consume(TokenType::IDENTIFIER, "Expect property name after '.'.");
+            expr = std::make_shared<GetExpr>(expr, name);
+        } else if (match({TokenType::LEFT_BRACKET})) {
+            std::shared_ptr<Expr> index = expression();
+            Token bracket = consume(TokenType::RIGHT_BRACKET, "Expected ']' after index.");
+            expr = std::make_shared<IndexExpr>(expr, index, bracket);
         } else {
             break;
         }
+    }
     }
 
     return expr;
@@ -250,6 +285,9 @@ std::shared_ptr<Expr> Parser::primary() {
         std::string value = std::get<std::string>(previous().literal);
         return std::make_shared<LiteralExpr>(value);
     }
+
+    if (match({TokenType::TRUE})) return std::make_shared<LiteralExpr>(true);
+    if (match({TokenType::FALSE})) return std::make_shared<LiteralExpr>(false);
 
     if (match({TokenType::IDENTIFIER})) {
         return std::make_shared<VariableExpr>(previous());

@@ -1,0 +1,34 @@
+# Phase 4 Part 2: Models
+
+model NeuralNet {
+  let layers = [1, 2, 3];
+  fn forward() {
+     print("Forward pass");
+     print(layers);
+  }
+}
+
+let nn = NeuralNet();
+print(nn); 
+# Expect "instance of NeuralNet"
+
+nn.forward();
+# Expect "Forward pass"
+# Expect "[1.000000, 2.000000, 3.000000]"
+
+print(nn.layers);
+# Expect "[1.000000, 2.000000, 3.000000]"
+
+model Counter {
+  let count = 0;
+  fn inc() {
+    count = count + 1;
+    print(count);
+  }
+}
+let c = Counter();
+c.inc(); # Expect 1
+c.inc(); # Expect 2
+
+let c2 = Counter();
+c2.inc(); # Expect 1

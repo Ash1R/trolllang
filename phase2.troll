@@ -1,0 +1,40 @@
+# Phase 2 Test: Control Flow
+
+# Logical Operators
+print(true || false); # Expect true
+print(false || false); # Expect false
+print(true && true); # Expect true
+print(false && true); # Expect false
+print(10 > 5 && 100 < 200); # Expect true
+
+# If/Else
+let a = 10;
+if (a > 5) {
+    print("a is big");
+} else {
+    print("a is small");
+}
+# Expect "a is big"
+
+if (a < 5) {
+    print("invalid");
+} else {
+    print("else branch works");
+}
+# Expect "else branch works"
+
+# While Loop
+let j = 0;
+while (j < 3) {
+    print(j);
+    # To increment, since we don't have assignment statements yet for existing vars easily without full semantic analyzer or strict assignment statement parsing
+    # Wait, `j = j + 1` is parsed as AssignmentExpr which is an Expression.
+    # An ExpressionStatement evaluates an expression.
+    # So `j = j + 1;` should work if `expressionStatement` rule handles it.
+    # `statement` -> `exprStmt`. `exprStmt` -> `expression` ";".
+    # `expression` -> `assignment`.
+    # `assignment` handles `=`.
+    # So yes, it should work.
+    j = j + 1;
+}
+# Expect 0 1 2

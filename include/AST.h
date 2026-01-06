@@ -13,9 +13,12 @@ struct UnaryExpr;
 struct LiteralExpr;
 struct VariableExpr;
 struct CallExpr;
+struct GetExpr;
 struct AssignmentExpr;
 struct LogicalExpr;
 struct ArrayLiteralExpr;
+struct IndexExpr;
+struct ArrayAssignmentExpr;
 
 struct BlockStmt;
 struct LetStmt;
@@ -25,6 +28,7 @@ struct ReturnStmt;
 struct PrintStmt;
 struct ExprStmt;
 struct FunctionStmt;
+struct ModelStmt;
 
 class Visitor {
 public:
@@ -36,9 +40,12 @@ public:
     virtual std::any visitLiteralExpr(std::shared_ptr<LiteralExpr> expr) = 0;
     virtual std::any visitVariableExpr(std::shared_ptr<VariableExpr> expr) = 0;
     virtual std::any visitCallExpr(std::shared_ptr<CallExpr> expr) = 0;
+    virtual std::any visitGetExpr(std::shared_ptr<GetExpr> expr) = 0;
     virtual std::any visitAssignmentExpr(std::shared_ptr<AssignmentExpr> expr) = 0;
     virtual std::any visitLogicalExpr(std::shared_ptr<LogicalExpr> expr) = 0;
     virtual std::any visitArrayLiteralExpr(std::shared_ptr<ArrayLiteralExpr> expr) = 0;
+    virtual std::any visitIndexExpr(std::shared_ptr<IndexExpr> expr) = 0;
+    virtual std::any visitArrayAssignmentExpr(std::shared_ptr<ArrayAssignmentExpr> expr) = 0;
 
     // Statements
     virtual std::any visitBlockStmt(std::shared_ptr<BlockStmt> stmt) = 0;
@@ -49,6 +56,7 @@ public:
     virtual std::any visitPrintStmt(std::shared_ptr<PrintStmt> stmt) = 0;
     virtual std::any visitExprStmt(std::shared_ptr<ExprStmt> stmt) = 0;
     virtual std::any visitFunctionStmt(std::shared_ptr<FunctionStmt> stmt) = 0;
+    virtual std::any visitModelStmt(std::shared_ptr<ModelStmt> stmt) = 0;
 };
 
 struct Expr {
@@ -89,9 +97,9 @@ struct UnaryExpr : public Expr, public std::enable_shared_from_this<UnaryExpr> {
 };
 
 struct LiteralExpr : public Expr, public std::enable_shared_from_this<LiteralExpr> {
-    std::variant<std::monostate, int, double, std::string> value;
+    std::variant<std::monostate, int, double, std::string, bool> value;
 
-    LiteralExpr(std::variant<std::monostate, int, double, std::string> value)
+    LiteralExpr(std::variant<std::monostate, int, double, std::string, bool> value)
         : value(std::move(value)) {}
 
     std::any accept(Visitor* visitor) override {
@@ -119,6 +127,18 @@ struct CallExpr : public Expr, public std::enable_shared_from_this<CallExpr> {
 
     std::any accept(Visitor* visitor) override {
         return visitor->visitCallExpr(shared_from_this());
+    }
+};
+
+struct GetExpr : public Expr, public std::enable_shared_from_this<GetExpr> {
+    std::shared_ptr<Expr> object;
+    Token name;
+
+    GetExpr(std::shared_ptr<Expr> object, Token name)
+        : object(std::move(object)), name(std::move(name)) {}
+
+    std::any accept(Visitor* visitor) override {
+        return visitor->visitGetExpr(shared_from_this());
     }
 };
 
@@ -252,6 +272,45 @@ struct FunctionStmt : public Stmt, public std::enable_shared_from_this<FunctionS
 
     std::any accept(Visitor* visitor) override {
         return visitor->visitFunctionStmt(shared_from_this());
+    }
+};
+
+struct ModelStmt : public Stmt, public std::enable_shared_from_this<ModelStmt> {
+    Token name;
+    std::vector<std::shared_ptr<Stmt>> methods;
+
+    ModelStmt(Token name, std::vector<std::shared_ptr<Stmt>> methods)
+        : name(std::move(name)), methods(std::move(methods)) {}
+
+    std::any accept(Visitor* visitor) override {
+        return visitor->visitModelStmt(shared_from_this());
+    }
+};
+
+struct IndexExpr : public Expr, public std::enable_shared_from_this<IndexExpr> {
+    std::shared_ptr<Expr> object;
+    std::shared_ptr<Expr> index;
+    Token bracket;
+
+    IndexExpr(std::shared_ptr<Expr> object, std::shared_ptr<Expr> index, Token bracket)
+    : object(object), index(index), bracket(bracket) {}
+
+    std::any accept(Visitor* visitor) override {
+        return visitor->visitIndexExpr(shared_from_this());
+    }
+};
+
+struct ArrayAssignmentExpr : public Expr, public std::enable_shared_from_this<ArrayAssignmentExpr> {
+    std::shared_ptr<Expr> object;
+    std::shared_ptr<Expr> index;
+    std::shared_ptr<Expr> value;
+    Token bracket;
+
+    ArrayAssignmentExpr(std::shared_ptr<Expr> object, std::shared_ptr<Expr> index, std::shared_ptr<Expr> value, Token bracket)
+    : object(object), index(index), value(value), bracket(bracket) {}
+
+    std::any accept(Visitor* visitor) override {
+        return visitor->visitArrayAssignmentExpr(shared_from_this());
     }
 };
 

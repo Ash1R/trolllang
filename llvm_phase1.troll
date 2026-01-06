@@ -1,0 +1,6 @@
+# LLVM Phase 1 Test
+let a = 10;
+let b = 20;
+let c = a + b * 2;
+print(c);
+# Expect 50.000000

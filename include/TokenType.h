@@ -5,7 +5,7 @@ enum class TokenType {
     // Single-character tokens
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
     LEFT_BRACKET, RIGHT_BRACKET,
-    COMMA, SEMICOLON, MINUS, PLUS, SLASH, STAR, PERCENT, AT,
+    COMMA, SEMICOLON, MINUS, PLUS, SLASH, STAR, PERCENT, AT, DOT,
 
     // One or two character tokens
     BANG, BANG_EQUAL,
@@ -18,7 +18,8 @@ enum class TokenType {
     IDENTIFIER, STRING, NUMBER,
 
     // Keywords
-    FN, LET, IF, ELSE, WHILE, RETURN, PRINT,
+    FN, LET, IF, ELSE, WHILE, RETURN, PRINT, MODEL,
+    TRUE, FALSE,
 
     // End of file
     END_OF_FILE

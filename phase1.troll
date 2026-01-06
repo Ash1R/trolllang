@@ -1,0 +1,18 @@
+# Phase 1 Test
+# Arithmetic
+let a = 10 + 20 * 2;
+print(a); # Expect 50
+
+# Logic (Basic)
+print(10 > 5); # Expect true
+
+# Strings
+let str = "Hello " + "World";
+print(str); # Expect Hello World
+
+# Blocks and Scope
+{
+    let a = 99;
+    print(a); # Expect 99
+}
+print(a); # Expect 50

@@ -8,7 +8,10 @@ const std::unordered_map<std::string, TokenType> Lexer::keywords = {
     {"else", TokenType::ELSE},
     {"while", TokenType::WHILE},
     {"return", TokenType::RETURN},
-    {"print", TokenType::PRINT}
+    {"print", TokenType::PRINT},
+    {"model", TokenType::MODEL},
+    {"true", TokenType::TRUE},
+    {"false", TokenType::FALSE}
 };
 
 Lexer::Lexer(std::string source) : source(std::move(source)) {}
@@ -32,6 +35,7 @@ void Lexer::scanToken() {
         case '[': addToken(TokenType::LEFT_BRACKET); break;
         case ']': addToken(TokenType::RIGHT_BRACKET); break;
         case ',': addToken(TokenType::COMMA); break;
+        case '.': addToken(TokenType::DOT); break;
         case ';': addToken(TokenType::SEMICOLON); break;
         case '-': addToken(TokenType::MINUS); break;
         case '+': addToken(TokenType::PLUS); break;
@@ -92,7 +96,7 @@ void Lexer::addToken(TokenType type) {
     addToken(type, std::monostate{});
 }
 
-void Lexer::addToken(TokenType type, std::variant<std::monostate, int, double, std::string> literal) {
+void Lexer::addToken(TokenType type, std::variant<std::monostate, int, double, std::string, bool> literal) {
     std::string text = source.substr(start, current - start);
     tokens.emplace_back(type, text, literal, line);
 }

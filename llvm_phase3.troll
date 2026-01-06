@@ -1,0 +1,11 @@
+fn add(a, b) {
+    return a + b;
+}
+
+fn fib(n) {
+    if (n < 2) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+
+print(add(10, 20));
+print(fib(10));

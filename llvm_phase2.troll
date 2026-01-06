@@ -1,0 +1,23 @@
+# LLVM Phase 2: Control Flow
+
+# Comparisons
+let a = 10;
+if (a > 5) {
+  print(111); # Expect 111.000000
+} else {
+  print(0);
+}
+
+if (a < 5) {
+  print(0);
+} else {
+  print(222); # Expect 222.000000
+}
+
+# While Loop
+let i = 0;
+while (i < 3) {
+  print(i);
+  i = i + 1;
+}
+# Expect 0.000000, 1.000000, 2.000000
