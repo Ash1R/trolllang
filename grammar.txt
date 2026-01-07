@@ -1,48 +1,55 @@
-# Trollang grammar, based on C, .troll extenstion
+# Trollang Grammar
+# Syntax: Extended BNF with Kleene operators (*, ?, +)
 
+program       := declaration* EOF ;
 
-# this is like high level blocks
-program     := (function)* EOF ;
+declaration   := modelDecl
+               | funDecl
+               | varDecl
+               | statement ;
 
-function    := "fn" IDENT "(" params? ")" block ;
-params      := IDENT ("," IDENT)* ;
+# Declarations
+modelDecl     := "model" IDENT "{" funDecl* "}" ;
+funDecl       := "fn" IDENT "(" parameters? ")" block ;
+varDecl       := "let" IDENT ( "=" expression )? ";" ;
+parameters    := IDENT ( "," IDENT )* ;
 
-block       := "{" statement* "}" ;
+# Statements
+statement     := exprStmt
+               | ifStmt
+               | whileStmt
+               | returnStmt
+               | printStmt
+               | block ;
 
-# control flow statements
-statement   := letStmt
-             | ifStmt
-             | whileStmt
-             | returnStmt
-             | printStmt
-             | exprStmt
-             | block ;
+block         := "{" declaration* "}" ;
+ifStmt        := "if" "(" expression ")" statement ( "else" statement )? ;
+whileStmt     := "while" "(" expression ")" statement ;
+returnStmt    := "return" expression? ";" ;
+printStmt     := "print" "(" expression ")" ";" ;
+exprStmt      := expression ";" ;
 
-letStmt     := "let" IDENT ("=" expr)? ";" ; #IDENT means indent based
-ifStmt      := "if" "(" expr ")" statement ("else" statement)? ;
-whileStmt   := "while" "(" expr ")" statement ;
-returnStmt  := "return" expr? ";" ;
-printStmt   := "print" "(" expr ")" ";" ;
-exprStmt    := expr ";" ;
+# Expressions
+expression    := assignment ;
 
-# expressions with variables !!
-expr        := assignment ;
+assignment    := ( call "=" )* logic_or ;
 
-assignment  := IDENT "=" assignment
-             | logic_or ;
+logic_or      := logic_and ( "||" logic_and )* ;
+logic_and     := equality ( "&&" equality )* ;
+equality      := comparison ( ( "!=" | "==" ) comparison )* ;
+comparison    := term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term          := factor ( ( "-" | "+" ) factor )* ;
+factor        := unary ( ( "/" | "*" | "%" | "@" ) unary )* ;
 
-logic_or    := logic_and ( "||" logic_and )* ;
-logic_and   := equality  ( "&&" equality  )* ;
-equality    := compare   ( ("==" | "!=") compare )* ;
-compare     := term      ( ("<" | "<=" | ">" | ">=") term )* ;
-term        := factor    ( ("+" | "-") factor )* ;
-factor      := unary     ( ("*" | "/" | "%") unary )* ;
-unary       := ("!" | "-") unary
-             | call ;
+# Unary: ( "!" | "-" )* call
+unary         := ( "!" | "-" )* call ;
 
-call        := primary ( "(" args? ")" )* ;
-args        := expr ("," expr)* ;
+call          := primary ( "(" arguments? ")" | "." IDENT | "[" expression "]" )* ;
+arguments     := expression ( "," expression )* ;
 
-primary     := INT
-             | IDENT
-             | "(" expr ")" ;
+primary       := NUMBER
+               | STRING
+               | "true" | "false" | "nil"
+               | "(" expression ")"
+               | IDENT
+               | "[" arguments? "]" ;

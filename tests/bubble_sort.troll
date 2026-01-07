@@ -1,0 +1,24 @@
+fn bubbleSort(arr) {
+    let n = 5;
+    let i = 0;
+    while (i < n) {
+        let j = 0;
+        let limit = n - i - 1;
+        while (j < limit) {
+             let a = arr[j];
+             let b = arr[j + 1];
+             if (a > b) {
+                 arr[j] = b;
+                 arr[j + 1] = a;
+             }
+             j = j + 1;
+        }
+        i = i + 1;
+    }
+    return arr;
+}
+
+let data = [50, 20, 40, 10, 30];
+print(data);
+bubbleSort(data);
+print(data);
